@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MOOO PRANK</title>
+<style>
+body {
+  background: black;
+  color: white;
+  text-align: center;
+  font-family: Arial;
+  padding-top: 70px;
+}
+h1 { font-size: 42px; }
+button {
+  padding: 16px 30px;
+  margin: 12px;
+  font-size: 20px;
+  border: none;
+  border-radius: 12px;
+}
+</style>
+</head>
+<body>
+
+<h1>🐄 MOOOO!</h1>
+<h2>THE COW HAS ARRIVED</h2>
+<p>Tap START for the surprise!</p>
+
+<button onclick="startMoo()">START 🔊</button>
+<button onclick="stopMoo()">STOP</button>
+
+<script>
+let audio;
+let timer;
+
+function startMoo() {
+  stopMoo();
+  audio = new AudioContext();
+
+  function moo() {
+    if (!audio) return;
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+    const filter = audio.createBiquadFilter();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(180, audio.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(
+      75, audio.currentTime + 0.8
+    );
+
+    filter.type = "lowpass";
+    filter.frequency.value = 650;
+
+    gain.gain.setValueAtTime(0.35, audio.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001, audio.currentTime + 1
+    );
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audio.destination);
+
+    osc.start();
+    osc.stop(audio.currentTime + 1);
+  }
+
+  moo();
+  timer = setInterval(moo, 1300);
+}
+
+function stopMoo() {
+  clearInterval(timer);
+  if (audio) {
+    audio.close();
+    audio = null;
+  }
+}
+</script>
+
+</body>
+</html>
